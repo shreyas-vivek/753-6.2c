@@ -1,105 +1,173 @@
 pipeline {
 
-   agent any
-
-   stages {
-
-       stage('Build') {
-
-           steps {
-
-               echo "This is a build stage"
-
-           }
-
-       }
-
-       stage('Unit and Integration Tests') {
-
-           steps {
-
-               echo "This is Unit and Integration Tests stage"
-
-           }
-
-       }
-
-       stage('Code Analysis') {
-
-           steps {
-
-               echo "This is Code Analysis stage"
-
-           }
-
-       }
-
-       stage('Security Scan') {
-
-           steps {
-
-               echo "This is Security Scan stage"
-
-           }
+    agent any
 
  
 
-post {
+    environment {
 
-   success {
+        DIRECTORY_PATH = "/path/to/code/directory"
 
-       mail to: "dhruvwaghela98@gmail.com",
+        TESTING_ENVIRONMENT = "TestingEnv"
 
-       subject: "Security Scan Status",
+        PRODUCTION_ENVIRONMENT = "YourNameProdEnv"
 
-       body: "Security Scan was successful"
+    }
 
-         }
+ 
 
-   failure {
+    stages {
 
-       mail to: "dhruvwaghela98@gmail.com",
+        stage('Build6') {
 
-       subject: "Security Scan Status",
+            steps {
 
-       body: "Security Scan was not successful"
+                echo "Fetching the source code from the directory path: ${env.DIRECTORY_PATH}"
 
-       }
+                echo "Compiling the code and generating artifacts"
 
-   }
+            }
 
-}
+        }
 
-       stage('Deploy to Staging') {
+ 
 
-           steps {
+        stage('Test') {
 
-               echo "This is Deploy to Staging test"
+            steps {
 
-           }
+                script {
 
-       }
+                    echo "Running unit tests"
 
-       stage('Integration Tests on Staging') {
+                    echo "Running integration tests"
 
-           steps {
 
-               echo "This is Integration Tests on Staging stage"
+                }
 
-           }
+            }
 
-       }
+            post {
 
-       stage('Deploy to Production') {
+ 
 
-           steps {
+                always {
 
-               echo "This is Deploy to Production stage"
+ 
 
-           }
+                  emailext attachLog: true,
 
-       }
+ 
 
-   }
+                  body: 'Test pipeline has been successfully executed',
+
+ 
+
+                  subject: 'Test is Successful',
+
+ 
+
+                  to: 'shreyasvivek01@gmail.com'
+
+ 
+
+                }
+
+ 
+
+            }
+
+        }
+
+ 
+
+        stage('Code Quality Check') {
+
+            steps {
+
+                script {
+
+                    echo "Checking the quality of the code in the pipeline"
+
+
+                }
+
+            }
+
+        }
+
+ 
+
+        stage('Deploy') {
+
+            steps {
+
+                script {
+
+                    echo "Deploying the application to ${env.TESTING_ENVIRONMENT}"
+
+                    // Add your deployment steps for testing environment here
+
+                }
+
+            }
+
+        }
+
+ 
+
+        stage('Approval') {
+
+            steps {
+
+                script {
+
+                    echo "Waiting for manual approval..."
+
+                    // Add manual approval steps here
+
+                }
+
+            }
+
+        }
+
+ 
+
+        stage('Deploy to Production') {
+
+            steps {
+
+                script {
+
+                    echo "Deploying the code to the production environment: ${env.PRODUCTION_ENVIRONMENT}"
+
+                    // Add your deployment steps for production environment here
+
+                }
+
+            }
+
+        }
+
+    }
+
+ 
+
+    post {
+
+        success {
+
+            echo "Pipeline executed successfully"
+
+        }
+
+        failure {
+
+            echo "Pipeline execution failed"
+
+        }
+
+    }
 
 }
